@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Notes - Développement Sécurisé</title>
+</head>
+<body>
+  <h1>Notes - Développement Sécurisé</h1>
+  <p id="last-update"></p>
+  <table border="1">
+    <thead>
+      <tr><th>Nom</th><th>Prénom</th><th>Note</th></tr>
+    </thead>
+    <tbody id="tbody"></tbody>
+  </table>
+  <script>
+    async function refresh() {
+      const res = await fetch("/notes");
+      const data = await res.json();
+      const tbody = document.getElementById("tbody");
+      tbody.innerHTML = "";
+      data.etudiants.forEach(function(e) {
+        var row = document.createElement("tr");
+        row.innerHTML = "<td>" + e.nom + "</td><td>" + e.prenom + "</td><td>" + e.note + "/" + e.sur + "</td>";
+        tbody.appendChild(row);
+      });
+      document.getElementById("last-update").textContent =
+        "Dernière mise à jour : " + new Date().toLocaleTimeString("fr-FR");
+    }
+    refresh();
+  </script>
+</body>
+</html>
