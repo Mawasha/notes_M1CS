@@ -79,23 +79,28 @@
       return "bar-red";
     }
 
+    function render(etudiants) {
+      tbody.innerHTML = "";
+      etudiants.forEach(function(e, i) {
+        const pct = Math.round((e.note / e.sur) * 100);
+        const cls = barClass(e.note, e.sur);
+        const row = document.createElement("tr");
+        row.id = "row-" + i;
+        row.innerHTML =
+          "<td class='nom'>" + e.nom + "</td>" +
+          "<td class='prenom'>" + e.prenom + "</td>" +
+          "<td class='note-cell'>" + e.note + "/" + e.sur + "</td>" +
+          "<td class='bar-cell'><div class='bar-wrap'><div class='bar-fill " + cls + "' style='width:" + pct + "%'></div></div></td>";
+        tbody.appendChild(row);
+      });
+    }
+
     async function refresh() {
       try {
         const res = await fetch("/notes");
         if (!res.ok) throw new Error();
         const data = await res.json();
-        tbody.innerHTML = "";
-        data.etudiants.forEach(function(e) {
-          const pct = Math.round((e.note / e.sur) * 100);
-          const cls = barClass(e.note, e.sur);
-          const row = document.createElement("tr");
-          row.innerHTML =
-            "<td>" + e.nom + "</td>" +
-            "<td>" + e.prenom + "</td>" +
-            "<td class='note-cell'>" + e.note + "/" + e.sur + "</td>" +
-            "<td class='bar-cell'><div class='bar-wrap'><div class='bar-fill " + cls + "' style='width:" + pct + "%'></div></div></td>";
-          tbody.appendChild(row);
-        });
+        render(data.etudiants);
         lastUpdate.textContent =
           "Dernière mise à jour : " + new Date().toLocaleTimeString("fr-FR");
       } catch {
@@ -104,6 +109,7 @@
     }
 
     refresh();
+    setInterval(refresh, 3000);
   </script>
 </body>
 </html>
